@@ -230,6 +230,68 @@ Use {{firstName}} and {{company}} as the minimum personalization variables. Add 
       {text}
     </span>
   );
+  const resultsPanel = result && (
+    <div>
+      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 18px", marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div>
+          <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.textMuted, textTransform: "uppercase", marginBottom: 4 }}>Pattern</div>
+          <div style={{ fontSize: 13, color: C.textMain }}>{result.pattern_used}</div>
+        </div>
+        <div style={{ textAlign: "right" }}>
+          <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.textMuted, textTransform: "uppercase", marginBottom: 4 }}>Subject Line</div>
+          <div style={{ fontSize: 13, color: C.accent, fontWeight: 500 }}>{result.subject_line}</div>
+        </div>
+      </div>
+      {result.steps.map((step) => (
+        <div key={step.step} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden", marginBottom: 10 }}>
+          <div style={{ background: "#0c1310", borderBottom: `1px solid ${C.border}`, padding: "9px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+              <div style={{ width: 19, height: 19, borderRadius: "50%", background: C.accentDim, border: `1px solid ${C.accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: C.accent }}>
+                {step.step}
+              </div>
+              <span style={{ fontSize: 10, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" }}>
+                Step {step.step} — Send Day {step.send_day}
+              </span>
+            </div>
+            <button onClick={() => copyStep(step.body, step.step)} style={{
+              background: "transparent", border: "none", cursor: "pointer",
+              fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase",
+              color: copiedStep === step.step ? C.accent : C.textDim,
+              fontFamily: "system-ui, sans-serif", transition: "color 0.2s", padding: "4px 6px",
+            }}>
+              {copiedStep === step.step ? "Copied ✓" : "Copy"}
+            </button>
+          </div>
+          <div style={{ padding: 18, fontSize: 13, lineHeight: 1.85, color: "#9ec8b0", whiteSpace: "pre-wrap" }}>
+            {step.body}
+          </div>
+        </div>
+      ))}
+      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.accent}`, borderRadius: "0 10px 10px 0", padding: "13px 16px", marginBottom: 10 }}>
+        <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.accent, textTransform: "uppercase", marginBottom: 6 }}>Why This Works</div>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: C.textMuted, margin: 0 }}>{result.why_it_works}</p>
+      </div>
+      {result.clay_variables?.length > 0 && (
+        <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "13px 16px", marginBottom: 14 }}>
+          <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.textMuted, textTransform: "uppercase", marginBottom: 8 }}>Clay Variables</div>
+          {result.clay_variables.map((v, i) => (
+            <div key={i} style={{ fontSize: 12, color: C.textDim, fontFamily: "monospace", marginBottom: 3 }}>{v}</div>
+          ))}
+        </div>
+      )}
+      <button onClick={copyAll} style={{
+        width: "100%", padding: "12px", borderRadius: 10,
+        border: `1px solid ${copiedStep === "all" ? C.accent : C.border}`,
+        background: "transparent",
+        color: copiedStep === "all" ? C.accent : C.textMuted,
+        fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase",
+        cursor: "pointer", fontFamily: "system-ui, sans-serif", transition: "all 0.2s",
+      }}>
+        {copiedStep === "all" ? "Copied to clipboard ✓" : "Copy full sequence"}
+      </button>
+    </div>
+  );
+
   return (
     <div style={{ minHeight: "100vh", background: C.bg, color: C.textMain, fontFamily: "system-ui, -apple-system, sans-serif" }}>
       <style>{`
@@ -238,7 +300,17 @@ Use {{firstName}} and {{company}} as the minimum personalization variables. Add 
         textarea { resize: none; }
         * { box-sizing: border-box; }
       `}</style>
-      <div style={{ maxWidth: 480, margin: "0 auto", padding: "40px 20px 80px" }}>
+      <div style={{
+        maxWidth: result ? 1080 : 480,
+        margin: "0 auto",
+        padding: "40px 24px 80px",
+        display: result ? "grid" : "block",
+        gridTemplateColumns: result ? "460px 1fr" : undefined,
+        gap: result ? 32 : undefined,
+        alignItems: "start",
+        transition: "max-width 0.2s",
+      }}>
+        <div>
         {/* Header */}
         <div style={{ marginBottom: 32 }}>
           <h1 style={{ fontSize: 34, fontWeight: 600, color: C.accent, margin: "0 0 10px", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
@@ -383,71 +455,11 @@ Use {{firstName}} and {{company}} as the minimum personalization variables. Add 
         }}>
           {loading ? "Writing sequence..." : "Generate Sequence"}
         </button>
-        {/* Results */}
-        {result && (
-          <div style={{ marginTop: 28 }}>
-            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 18px", marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-              <div>
-                <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.textMuted, textTransform: "uppercase", marginBottom: 4 }}>Pattern</div>
-                <div style={{ fontSize: 13, color: C.textMain }}>{result.pattern_used}</div>
-              </div>
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.textMuted, textTransform: "uppercase", marginBottom: 4 }}>Subject Line</div>
-                <div style={{ fontSize: 13, color: C.accent, fontWeight: 500 }}>{result.subject_line}</div>
-              </div>
-            </div>
-            {result.steps.map((step) => (
-              <div key={step.step} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden", marginBottom: 10 }}>
-                <div style={{ background: "#0c1310", borderBottom: `1px solid ${C.border}`, padding: "9px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-                    <div style={{ width: 19, height: 19, borderRadius: "50%", background: C.accentDim, border: `1px solid ${C.accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: C.accent }}>
-                      {step.step}
-                    </div>
-                    <span style={{ fontSize: 10, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" }}>
-                      Step {step.step} — Send Day {step.send_day}
-                    </span>
-                  </div>
-                  <button onClick={() => copyStep(step.body, step.step)} style={{
-                    background: "transparent", border: "none", cursor: "pointer",
-                    fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase",
-                    color: copiedStep === step.step ? C.accent : C.textDim,
-                    fontFamily: "system-ui, sans-serif", transition: "color 0.2s", padding: "4px 6px",
-                  }}>
-                    {copiedStep === step.step ? "Copied ✓" : "Copy"}
-                  </button>
-                </div>
-                <div style={{ padding: 18, fontSize: 13, lineHeight: 1.85, color: "#9ec8b0", whiteSpace: "pre-wrap" }}>
-                  {step.body}
-                </div>
-              </div>
-            ))}
-            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.accent}`, borderRadius: "0 10px 10px 0", padding: "13px 16px", marginBottom: 10 }}>
-              <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.accent, textTransform: "uppercase", marginBottom: 6 }}>Why This Works</div>
-              <p style={{ fontSize: 13, lineHeight: 1.7, color: C.textMuted, margin: 0 }}>{result.why_it_works}</p>
-            </div>
-            {result.clay_variables?.length > 0 && (
-              <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "13px 16px", marginBottom: 14 }}>
-                <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.textMuted, textTransform: "uppercase", marginBottom: 8 }}>Clay Variables</div>
-                {result.clay_variables.map((v, i) => (
-                  <div key={i} style={{ fontSize: 12, color: C.textDim, fontFamily: "monospace", marginBottom: 3 }}>{v}</div>
-                ))}
-              </div>
-            )}
-            <button onClick={copyAll} style={{
-              width: "100%", padding: "12px", borderRadius: 10,
-              border: `1px solid ${copiedStep === "all" ? C.accent : C.border}`,
-              background: "transparent",
-              color: copiedStep === "all" ? C.accent : C.textMuted,
-              fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase",
-              cursor: "pointer", fontFamily: "system-ui, sans-serif", transition: "all 0.2s",
-            }}>
-              {copiedStep === "all" ? "Copied to clipboard ✓" : "Copy full sequence"}
-            </button>
-          </div>
-        )}
         <div style={{ marginTop: 48, textAlign: "center", fontSize: 10, letterSpacing: "0.15em", color: C.textDim, textTransform: "uppercase" }}>
           Rudiment GTM Engineering
         </div>
+        </div>
+        {resultsPanel}
       </div>
     </div>
   );
