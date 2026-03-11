@@ -76,9 +76,9 @@ const C = {
   surfaceHover: "#111a16",
   border: "#182820",
   borderLight: "#1e3328",
-  textMain: "#c8e8d8",
-  textMuted: "#4e7060",
-  textDim: "#2a4838",
+  textMain: "#ffffff",
+  textMuted: "#cccccc",
+  textDim: "#999999",
   red: "#ff4444",
   redDim: "rgba(255,68,68,0.1)",
 };
@@ -207,6 +207,176 @@ Use {{firstName}} and {{company}} as the minimum personalization variables. Add 
   const sublbl = (text) => (
     <span style={{ display: "block", fontSize: 11, color: C.textMuted, marginBottom: 7, fontStyle: "italic" }}>{text}</span>
   );
+
+  const formPanel = (
+    <div style={{ width: "100%" }}>
+      {/* Header */}
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{ fontSize: 34, fontWeight: 600, color: C.accent, margin: "0 0 10px", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
+          Outbound copywriter
+        </h1>
+        <p style={{ color: C.textMuted, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
+          Cold email sequences built from proven patterns. 7.14% reply rates. No fluff.
+        </p>
+      </div>
+      {/* Section 1 */}
+      <div style={sectionCard}>
+        {sectionHeader(1)}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+          <div>
+            {lbl("Client Name")}
+            <input style={inp} placeholder="e.g. Workstream" value={form.clientName} onChange={e => handleChange("clientName", e.target.value)} />
+          </div>
+          <div>
+            {lbl("What They Sell")}
+            <input style={inp} placeholder="e.g. HR + payroll for hourly teams" value={form.whatTheySell} onChange={e => handleChange("whatTheySell", e.target.value)} />
+          </div>
+        </div>
+        <div style={{ marginBottom: 12 }}>
+          {lbl("Value Proposition")}
+          {sublbl("What makes it different. What it replaces. The core promise with proof.")}
+          <textarea style={{ ...inp, minHeight: 78 }} rows={3}
+            placeholder="e.g. All-in-one platform replacing 7+ tools, 30,000+ locations trust it including Jimmy John's and Culver's."
+            value={form.valueProp} onChange={e => handleChange("valueProp", e.target.value)} />
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+          <div>
+            {lbl("ICP Job Title")}
+            <input style={inp} placeholder="e.g. VP Ops, General Manager" value={form.icpTitle} onChange={e => handleChange("icpTitle", e.target.value)} />
+          </div>
+          <div>
+            {lbl("ICP Company Type")}
+            <input style={inp} placeholder="e.g. Multi-location QSR franchise" value={form.icpCompanyType} onChange={e => handleChange("icpCompanyType", e.target.value)} />
+          </div>
+        </div>
+        <div style={{ marginBottom: 12 }}>
+          {lbl("Primary Pain / Trigger")}
+          <textarea style={{ ...inp, minHeight: 68 }} rows={2}
+            placeholder="e.g. Juggling multiple systems, chasing paperwork, compliance headaches"
+            value={form.primaryPain} onChange={e => handleChange("primaryPain", e.target.value)} />
+        </div>
+        <div>
+          {lbl("Social Proof / Results", true)}
+          <textarea style={{ ...inp, minHeight: 68 }} rows={2}
+            placeholder="e.g. Cut admin time 60%, eliminated 7 tools, saved $40K/yr"
+            value={form.socialProof} onChange={e => handleChange("socialProof", e.target.value)} />
+        </div>
+      </div>
+      {/* Section 2 */}
+      <div style={sectionCard}>
+        {sectionHeader(2)}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {PATTERNS.map(p => {
+            const active = form.pattern === p.id;
+            return (
+              <button key={p.id} onClick={() => handleChange("pattern", p.id)} style={{
+                display: "flex", alignItems: "center", gap: 12,
+                padding: "11px 14px", borderRadius: 10, textAlign: "left",
+                border: `1px solid ${active ? C.accent : C.border}`,
+                background: active ? C.accentDim : "transparent",
+                cursor: "pointer", transition: "all 0.15s",
+              }}>
+                <div style={{
+                  width: 7, height: 7, borderRadius: "50%", flexShrink: 0,
+                  background: active ? C.accent : C.textDim,
+                  boxShadow: active ? `0 0 8px ${C.accent}` : "none",
+                  transition: "all 0.15s",
+                }} />
+                <div>
+                  <span style={{ fontSize: 13, color: active ? C.accent : C.textMain, fontWeight: active ? 500 : 400 }}>{p.label}</span>
+                  <span style={{ fontSize: 11, color: C.textMuted, marginLeft: 8 }}>{p.desc}</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      {error && (
+        <div style={{ background: C.redDim, border: `1px solid rgba(255,68,68,0.25)`, borderRadius: 10, padding: "11px 14px", marginBottom: 14, fontSize: 13, color: "#ff8888" }}>
+          {error}
+        </div>
+      )}
+      {/* CTA */}
+      <button onClick={generate} disabled={loading} style={{
+        width: "100%", padding: "15px", borderRadius: 12, border: "none",
+        background: loading ? C.surface : C.accent,
+        color: loading ? C.textMuted : "#060e0a",
+        fontSize: 13, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
+        cursor: loading ? "not-allowed" : "pointer",
+        fontFamily: "system-ui, -apple-system, sans-serif",
+        transition: "all 0.2s",
+        boxShadow: loading ? "none" : `0 0 28px rgba(0,255,179,0.22)`,
+      }}>
+        {loading ? "Writing sequence..." : "Generate Sequence"}
+      </button>
+      <div style={{ marginTop: 48, textAlign: "center", fontSize: 10, letterSpacing: "0.15em", color: C.textDim, textTransform: "uppercase" }}>
+        Rudiment GTM Engineering
+      </div>
+    </div>
+  );
+
+  const resultsPanel = result && (
+    <div>
+      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 18px", marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div>
+          <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.textMuted, textTransform: "uppercase", marginBottom: 4 }}>Pattern</div>
+          <div style={{ fontSize: 13, color: C.textMain }}>{result.pattern_used}</div>
+        </div>
+        <div style={{ textAlign: "right" }}>
+          <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.textMuted, textTransform: "uppercase", marginBottom: 4 }}>Subject Line</div>
+          <div style={{ fontSize: 13, color: C.accent, fontWeight: 500 }}>{result.subject_line}</div>
+        </div>
+      </div>
+      {result.steps.map((step) => (
+        <div key={step.step} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden", marginBottom: 10 }}>
+          <div style={{ background: "#0c1310", borderBottom: `1px solid ${C.border}`, padding: "9px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+              <div style={{ width: 19, height: 19, borderRadius: "50%", background: C.accentDim, border: `1px solid ${C.accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: C.accent }}>
+                {step.step}
+              </div>
+              <span style={{ fontSize: 10, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" }}>
+                Step {step.step} — Send Day {step.send_day}
+              </span>
+            </div>
+            <button onClick={() => copyStep(step.body, step.step)} style={{
+              background: "transparent", border: "none", cursor: "pointer",
+              fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase",
+              color: copiedStep === step.step ? C.accent : C.textMuted,
+              fontFamily: "system-ui, sans-serif", transition: "color 0.2s", padding: "4px 6px",
+            }}>
+              {copiedStep === step.step ? "Copied ✓" : "Copy"}
+            </button>
+          </div>
+          <div style={{ padding: 18, fontSize: 13, lineHeight: 1.85, color: C.textMain, whiteSpace: "pre-wrap" }}>
+            {step.body}
+          </div>
+        </div>
+      ))}
+      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.accent}`, borderRadius: "0 10px 10px 0", padding: "13px 16px", marginBottom: 10 }}>
+        <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.accent, textTransform: "uppercase", marginBottom: 6 }}>Why This Works</div>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: C.textMuted, margin: 0 }}>{result.why_it_works}</p>
+      </div>
+      {result.clay_variables?.length > 0 && (
+        <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "13px 16px", marginBottom: 14 }}>
+          <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.textMuted, textTransform: "uppercase", marginBottom: 8 }}>Clay Variables</div>
+          {result.clay_variables.map((v, i) => (
+            <div key={i} style={{ fontSize: 12, color: C.textMuted, fontFamily: "monospace", marginBottom: 3 }}>{v}</div>
+          ))}
+        </div>
+      )}
+      <button onClick={copyAll} style={{
+        width: "100%", padding: "12px", borderRadius: 10,
+        border: `1px solid ${copiedStep === "all" ? C.accent : C.border}`,
+        background: "transparent",
+        color: copiedStep === "all" ? C.accent : C.textMuted,
+        fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase",
+        cursor: "pointer", fontFamily: "system-ui, sans-serif", transition: "all 0.2s",
+      }}>
+        {copiedStep === "all" ? "Copied to clipboard ✓" : "Copy full sequence"}
+      </button>
+    </div>
+  );
+
   return (
     <div style={{ minHeight: "100vh", background: C.bg, color: C.textMain, fontFamily: "system-ui, -apple-system, sans-serif" }}>
       <style>{`
@@ -215,172 +385,16 @@ Use {{firstName}} and {{company}} as the minimum personalization variables. Add 
         textarea { resize: none; }
         * { box-sizing: border-box; }
       `}</style>
-      <div style={{ maxWidth: 480, margin: "0 auto", padding: "40px 20px 80px" }}>
-        {/* Header */}
-        <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontSize: 34, fontWeight: 600, color: C.accent, margin: "0 0 10px", lineHeight: 1.1, letterSpacing: "-0.02em" }}>
-            Outbound copywriter
-          </h1>
-          <p style={{ color: C.textMuted, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-            Cold email sequences built from proven patterns. 7.14% reply rates. No fluff.
-          </p>
+      {result ? (
+        <div style={{ maxWidth: 1080, margin: "0 auto", padding: "40px 24px 80px", display: "grid", gridTemplateColumns: "460px 1fr", gap: 32, alignItems: "start" }}>
+          {formPanel}
+          {resultsPanel}
         </div>
-        {/* Section 1 */}
-        <div style={sectionCard}>
-          {sectionHeader(1)}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
-            <div>
-              {lbl("Client Name")}
-              <input style={inp} placeholder="e.g. Workstream" value={form.clientName} onChange={e => handleChange("clientName", e.target.value)} />
-            </div>
-            <div>
-              {lbl("What They Sell")}
-              <input style={inp} placeholder="e.g. HR + payroll for hourly teams" value={form.whatTheySell} onChange={e => handleChange("whatTheySell", e.target.value)} />
-            </div>
-          </div>
-          <div style={{ marginBottom: 12 }}>
-            {lbl("Value Proposition")}
-            {sublbl("What makes it different. What it replaces. The core promise with proof.")}
-            <textarea style={{ ...inp, minHeight: 78 }} rows={3}
-              placeholder="e.g. All-in-one platform replacing 7+ tools, 30,000+ locations trust it including Jimmy John's and Culver's."
-              value={form.valueProp} onChange={e => handleChange("valueProp", e.target.value)} />
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
-            <div>
-              {lbl("ICP Job Title")}
-              <input style={inp} placeholder="e.g. VP Ops, General Manager" value={form.icpTitle} onChange={e => handleChange("icpTitle", e.target.value)} />
-            </div>
-            <div>
-              {lbl("ICP Company Type")}
-              <input style={inp} placeholder="e.g. Multi-location QSR franchise" value={form.icpCompanyType} onChange={e => handleChange("icpCompanyType", e.target.value)} />
-            </div>
-          </div>
-          <div style={{ marginBottom: 12 }}>
-            {lbl("Primary Pain / Trigger")}
-            <textarea style={{ ...inp, minHeight: 68 }} rows={2}
-              placeholder="e.g. Juggling multiple systems, chasing paperwork, compliance headaches"
-              value={form.primaryPain} onChange={e => handleChange("primaryPain", e.target.value)} />
-          </div>
-          <div>
-            {lbl("Social Proof / Results", true)}
-            <textarea style={{ ...inp, minHeight: 68 }} rows={2}
-              placeholder="e.g. Cut admin time 60%, eliminated 7 tools, saved $40K/yr"
-              value={form.socialProof} onChange={e => handleChange("socialProof", e.target.value)} />
-          </div>
+      ) : (
+        <div style={{ maxWidth: 480, margin: "0 auto", padding: "40px 20px 80px" }}>
+          {formPanel}
         </div>
-        {/* Section 2 */}
-        <div style={sectionCard}>
-          {sectionHeader(2)}
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {PATTERNS.map(p => {
-              const active = form.pattern === p.id;
-              return (
-                <button key={p.id} onClick={() => handleChange("pattern", p.id)} style={{
-                  display: "flex", alignItems: "center", gap: 12,
-                  padding: "11px 14px", borderRadius: 10, textAlign: "left",
-                  border: `1px solid ${active ? C.accent : C.border}`,
-                  background: active ? C.accentDim : "transparent",
-                  cursor: "pointer", transition: "all 0.15s",
-                }}>
-                  <div style={{
-                    width: 7, height: 7, borderRadius: "50%", flexShrink: 0,
-                    background: active ? C.accent : C.textDim,
-                    boxShadow: active ? `0 0 8px ${C.accent}` : "none",
-                    transition: "all 0.15s",
-                  }} />
-                  <div>
-                    <span style={{ fontSize: 13, color: active ? C.accent : C.textMain, fontWeight: active ? 500 : 400 }}>{p.label}</span>
-                    <span style={{ fontSize: 11, color: C.textMuted, marginLeft: 8 }}>{p.desc}</span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-        {error && (
-          <div style={{ background: C.redDim, border: `1px solid rgba(255,68,68,0.25)`, borderRadius: 10, padding: "11px 14px", marginBottom: 14, fontSize: 13, color: "#ff8888" }}>
-            {error}
-          </div>
-        )}
-        {/* CTA */}
-        <button onClick={generate} disabled={loading} style={{
-          width: "100%", padding: "15px", borderRadius: 12, border: "none",
-          background: loading ? C.surface : C.accent,
-          color: loading ? C.textMuted : "#060e0a",
-          fontSize: 13, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
-          cursor: loading ? "not-allowed" : "pointer",
-          fontFamily: "system-ui, -apple-system, sans-serif",
-          transition: "all 0.2s",
-          boxShadow: loading ? "none" : `0 0 28px rgba(0,255,179,0.22)`,
-        }}>
-          {loading ? "Writing sequence..." : "Generate Sequence"}
-        </button>
-        {/* Results */}
-        {result && (
-          <div style={{ marginTop: 28 }}>
-            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 18px", marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-              <div>
-                <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.textMuted, textTransform: "uppercase", marginBottom: 4 }}>Pattern</div>
-                <div style={{ fontSize: 13, color: C.textMain }}>{result.pattern_used}</div>
-              </div>
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.textMuted, textTransform: "uppercase", marginBottom: 4 }}>Subject Line</div>
-                <div style={{ fontSize: 13, color: C.accent, fontWeight: 500 }}>{result.subject_line}</div>
-              </div>
-            </div>
-            {result.steps.map((step) => (
-              <div key={step.step} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden", marginBottom: 10 }}>
-                <div style={{ background: "#0c1310", borderBottom: `1px solid ${C.border}`, padding: "9px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-                    <div style={{ width: 19, height: 19, borderRadius: "50%", background: C.accentDim, border: `1px solid ${C.accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: C.accent }}>
-                      {step.step}
-                    </div>
-                    <span style={{ fontSize: 10, letterSpacing: "0.1em", color: C.textMuted, textTransform: "uppercase" }}>
-                      Step {step.step} — Send Day {step.send_day}
-                    </span>
-                  </div>
-                  <button onClick={() => copyStep(step.body, step.step)} style={{
-                    background: "transparent", border: "none", cursor: "pointer",
-                    fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase",
-                    color: copiedStep === step.step ? C.accent : C.textDim,
-                    fontFamily: "system-ui, sans-serif", transition: "color 0.2s", padding: "4px 6px",
-                  }}>
-                    {copiedStep === step.step ? "Copied ✓" : "Copy"}
-                  </button>
-                </div>
-                <div style={{ padding: 18, fontSize: 13, lineHeight: 1.85, color: "#9ec8b0", whiteSpace: "pre-wrap" }}>
-                  {step.body}
-                </div>
-              </div>
-            ))}
-            <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.accent}`, borderRadius: "0 10px 10px 0", padding: "13px 16px", marginBottom: 10 }}>
-              <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.accent, textTransform: "uppercase", marginBottom: 6 }}>Why This Works</div>
-              <p style={{ fontSize: 13, lineHeight: 1.7, color: C.textMuted, margin: 0 }}>{result.why_it_works}</p>
-            </div>
-            {result.clay_variables?.length > 0 && (
-              <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "13px 16px", marginBottom: 14 }}>
-                <div style={{ fontSize: 9, letterSpacing: "0.12em", color: C.textMuted, textTransform: "uppercase", marginBottom: 8 }}>Clay Variables</div>
-                {result.clay_variables.map((v, i) => (
-                  <div key={i} style={{ fontSize: 12, color: C.textDim, fontFamily: "monospace", marginBottom: 3 }}>{v}</div>
-                ))}
-              </div>
-            )}
-            <button onClick={copyAll} style={{
-              width: "100%", padding: "12px", borderRadius: 10,
-              border: `1px solid ${copiedStep === "all" ? C.accent : C.border}`,
-              background: "transparent",
-              color: copiedStep === "all" ? C.accent : C.textMuted,
-              fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase",
-              cursor: "pointer", fontFamily: "system-ui, sans-serif", transition: "all 0.2s",
-            }}>
-              {copiedStep === "all" ? "Copied to clipboard ✓" : "Copy full sequence"}
-            </button>
-          </div>
-        )}
-        <div style={{ marginTop: 48, textAlign: "center", fontSize: 10, letterSpacing: "0.15em", color: C.textDim, textTransform: "uppercase" }}>
-          Rudiment GTM Engineering
-        </div>
-      </div>
+      )}
     </div>
   );
 }
